@@ -30,9 +30,8 @@ const mapStateToProps = ({ properties }) => ({properties});
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    createProperty: async () => {
-      const property = (await axios.post('/api/properties')).data;
-      dispatch(createProperty(property));
+    createProperty: () => {
+      dispatch(createProperty());
     }
   };
 };

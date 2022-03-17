@@ -1,57 +1,115 @@
-import { createStore } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import axios from 'axios';
+import thunk from 'redux-thunk';
+import logger from 'redux-logger';
 
 const LOAD_AGENTS = 'LOAD_AGENTS';
 const LOAD_PROPERTIES = 'LOAD_PROPERTIES';
 const LOADED = 'LOADED';
 const CREATE_PROPERTY = 'CREATE_PROPERTY';
+const SET_VIEW = 'SET_VIEW';
 
 const initialState = {
   agents: [],
   properties: [],
-  loading: true
+  loading: true,
+  view: ''
 };
 
-const store = createStore((state = initialState, action) => {
+const agentsReducer = (state = [], action) => {
   if (action.type === LOAD_AGENTS) {
-    state = {...state, agents: action.agents};
-  }
-  if (action.type === LOAD_PROPERTIES) {
-    state = {...state, properties: action.properties};
-  }
-  if (action.type === LOADED) {
-    state = {...state, loading: false};
-  }
-  if (action.type === CREATE_PROPERTY) {
-    state = {...state, properties: [...state.properties, action.property]};
+    state = action.agents;
   }
   return state;
+}
+
+const propertiesReducer = (state = [], action) => {
+  if (action.type === LOAD_PROPERTIES) {
+    state = action.properties;
+  }
+  if (action.type === CREATE_PROPERTY) {
+    state = [...state, action.property];
+  }
+  return state;
+}
+
+const loadingReducer = (state = true, action) => {
+  if (action.type === LOADED) {
+    state = false;
+  }
+  return state;
+}
+
+const viewReducer = (state = '', action) => {
+  if (action.type === SET_VIEW) {
+    state = action.view;
+  }
+  return state;
+}
+
+const reducer = combineReducers({
+  agents: agentsReducer, 
+  properties: propertiesReducer, 
+  loading: loadingReducer,
+  view: viewReducer
 });
 
-export const loadAgents = (agents) => {
+const store = createStore(reducer, applyMiddleware(thunk, logger));
+
+const _loadAgents = (agents) => {
   return {
     type: LOAD_AGENTS,
     agents
   };
 };
 
-export const loadProperties = (properties) => {
+const loadAgents = () => {
+  return async (dispatch) => {
+    const agents = (await axios.get('/api/agents')).data;
+    dispatch(_loadAgents(agents));
+  };
+};
+
+const _loadProperties = (properties) => {
   return {
     type: LOAD_PROPERTIES,
     properties
   };
 };
 
-export const loaded = () => {
+const loadProperties = () => {
+  return async (dispatch) => {
+    const properties = (await axios.get('/api/properties')).data;
+    dispatch(_loadProperties(properties));
+  };
+};
+
+const loaded = () => {
   return {
     type: LOADED
   };
 };
 
-export const createProperty = (property) => {
+const _createProperty = (property) => {
   return {
     type: CREATE_PROPERTY,
     property
   };
 };
 
+const createProperty = () => {
+  return async (dispatch) => {
+    const property = (await axios.post('/api/properties')).data;
+    dispatch(_createProperty(property));
+  };
+};
+
+const setView = (view) => {
+  return {
+    type: SET_VIEW,
+    view
+  };
+};
+
+export { loadAgents, loadProperties, loaded, createProperty, setView };
 export default store;
