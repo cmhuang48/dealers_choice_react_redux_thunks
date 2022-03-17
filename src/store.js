@@ -1,9 +1,9 @@
 import { createStore } from 'redux';
 
-export const LOAD_AGENTS = 'LOAD_AGENTS';
-export const LOAD_PROPERTIES = 'LOAD_PROPERTIES';
-export const LOADED = 'LOADED';
-export const CREATE_PROPERTY = 'CREATE_PROPERTY';
+const LOAD_AGENTS = 'LOAD_AGENTS';
+const LOAD_PROPERTIES = 'LOAD_PROPERTIES';
+const LOADED = 'LOADED';
+const CREATE_PROPERTY = 'CREATE_PROPERTY';
 
 const initialState = {
   agents: [],
@@ -26,5 +26,32 @@ const store = createStore((state = initialState, action) => {
   }
   return state;
 });
+
+export const loadAgents = (agents) => {
+  return {
+    type: LOAD_AGENTS,
+    agents
+  };
+};
+
+export const loadProperties = (properties) => {
+  return {
+    type: LOAD_PROPERTIES,
+    properties
+  };
+};
+
+export const loaded = () => {
+  return {
+    type: LOADED
+  };
+};
+
+export const createProperty = (property) => {
+  return {
+    type: CREATE_PROPERTY,
+    property
+  };
+};
 
 export default store;

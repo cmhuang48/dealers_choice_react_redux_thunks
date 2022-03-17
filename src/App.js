@@ -3,37 +3,24 @@ import axios from 'axios';
 import Nav from './components/Nav';
 import Agents from './components/Agents';
 import Properties from './components/Properties';
-import store, { LOAD_AGENTS, LOAD_PROPERTIES, LOADED } from './store';
+import { loadAgents, loadProperties, loaded } from './store';
+import { connect } from 'react-redux';
 
-class App extends React.Component {
+class _App extends React.Component {
   constructor () {
     super();
-    this.state = {...store.getState(), view: ''};
+    this.state = { view: '' };
   }
   async componentDidMount () {
     window.addEventListener('hashchange', () => {
       this.setState({ view: window.location.hash.slice(1) });
     });
     this.setState({ view: window.location.hash.slice(1) });
-    const agents = (await axios.get('/api/agents')).data;
-    const properties = (await axios.get('/api/properties')).data;
-    store.subscribe(() => {
-      this.setState(store.getState());
-    });
-    store.dispatch({
-      type: LOAD_AGENTS,
-      agents
-    });
-    store.dispatch({
-      type: LOAD_PROPERTIES,
-      properties
-    });
-    store.dispatch({
-      type: LOADED
-    });
+    this.props.load();
   }
   render () {
-    const { loading, view } = this.state;
+    const { view } = this.state;
+    const { loading } = this.props;
     if (loading) {
       return null;
     }
@@ -48,5 +35,21 @@ class App extends React.Component {
     );
   }
 };
+
+const mapStateToProps = ({ loading }) => ({loading});
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    load: async () => {
+      const agents = (await axios.get('/api/agents')).data;
+      const properties = (await axios.get('/api/properties')).data;
+      dispatch(loadAgents(agents));
+      dispatch(loadProperties(properties));
+      dispatch(loaded());
+    }
+  };
+};
+
+const App = connect(mapStateToProps, mapDispatchToProps)(_App);
 
 export default App;
