@@ -14,7 +14,7 @@ app.get('/api/agents', async (req, res, next) => {
   catch(ex) {
     next(ex);
   }
-})
+});
 
 app.get('/api/properties', async (req, res, next) => {
   try {
@@ -23,7 +23,16 @@ app.get('/api/properties', async (req, res, next) => {
   catch(ex) {
     next(ex);
   }
-})
+});
+
+app.post('/api/properties', async (req, res, next) => {
+  try {
+    res.send(await Property.createRandomProperty());
+  }
+  catch(ex) {
+    next(ex);
+  }
+});
 
 const init = async () => {
   try {

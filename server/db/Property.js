@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const sequelize = require('./conn');
+const faker = require('faker');
 
 const Property = sequelize.define('property', {
   name: {
@@ -45,5 +46,16 @@ const Property = sequelize.define('property', {
     }
   }
 });
+
+Property.createRandomProperty = function () {
+  return this.create({
+    name: faker.company.companyName(), 
+    address: faker.address.streetAddress(), 
+    bedrooms: Math.ceil(Math.random()*10), 
+    bathrooms: Math.ceil(Math.random()*10),
+    squareFootage: Math.ceil(Math.random()*10000),
+    image: faker.system.fileName()
+  });
+}
 
 module.exports = Property;
