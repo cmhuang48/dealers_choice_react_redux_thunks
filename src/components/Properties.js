@@ -1,9 +1,8 @@
 import React from 'react';
-import axios from 'axios';
-import { createProperty } from '../store';
+import { createProperty, destroyProperty } from '../store';
 import { connect } from 'react-redux';
 
-const Properties = ({ properties, createProperty }) => {
+const Properties = ({ properties, createProperty, destroyProperty }) => {
   return (
     <div>
       <h2>Properties ({properties.length})</h2>
@@ -17,6 +16,7 @@ const Properties = ({ properties, createProperty }) => {
                 <li>{property.bedrooms} bedrooms | {property.bathrooms} bathrooms | {property.squareFootage} sq ft</li>
                 <li>{property.image}</li>
               </ul>
+              <button onClick={() => destroyProperty(property)}>Delete Property</button>
             </li>
           );
         })}
@@ -32,6 +32,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     createProperty: () => {
       dispatch(createProperty());
+    },
+    destroyProperty: (property) => {
+      dispatch(destroyProperty(property));
     }
   };
 };

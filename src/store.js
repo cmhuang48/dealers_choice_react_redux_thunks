@@ -7,6 +7,7 @@ const LOAD_AGENTS = 'LOAD_AGENTS';
 const LOAD_PROPERTIES = 'LOAD_PROPERTIES';
 const LOADED = 'LOADED';
 const CREATE_PROPERTY = 'CREATE_PROPERTY';
+const DESTROY_PROPERTY = 'DESTROY_PROPERTY';
 const SET_VIEW = 'SET_VIEW';
 
 const initialState = {
@@ -29,6 +30,9 @@ const propertiesReducer = (state = [], action) => {
   }
   if (action.type === CREATE_PROPERTY) {
     state = [...state, action.property];
+  }
+  if (action.type === DESTROY_PROPERTY) {
+    state = state.filter(property => property.id !== action.property.id);
   }
   return state;
 }
@@ -104,6 +108,20 @@ const createProperty = () => {
   };
 };
 
+const _destroyProperty = (property) => {
+  return {
+    type: DESTROY_PROPERTY,
+    property
+  };
+};
+
+const destroyProperty = (property) => {
+  return async (dispatch) => {
+    await axios.delete(`/api/properties/${property.id}`);
+    dispatch(_destroyProperty(property));
+  };
+}
+
 const setView = (view) => {
   return {
     type: SET_VIEW,
@@ -111,5 +129,5 @@ const setView = (view) => {
   };
 };
 
-export { loadAgents, loadProperties, loaded, createProperty, setView };
+export { loadAgents, loadProperties, loaded, createProperty, destroyProperty, setView };
 export default store;

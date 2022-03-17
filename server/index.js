@@ -1,4 +1,5 @@
 const express = require('express');
+const res = require('express/lib/response');
 const app = express();
 const path = require('path');
 const { Agent, Property, syncAndSeed } = require('./db');
@@ -28,6 +29,17 @@ app.get('/api/properties', async (req, res, next) => {
 app.post('/api/properties', async (req, res, next) => {
   try {
     res.send(await Property.createRandomProperty());
+  }
+  catch(ex) {
+    next(ex);
+  }
+});
+
+app.delete('/api/properties/:id', async (req, res, next) => {
+  try {
+    const property = await Property.findByPk(req.params.id);
+    property.destroy();
+    res.sendStatus(204);
   }
   catch(ex) {
     next(ex);
